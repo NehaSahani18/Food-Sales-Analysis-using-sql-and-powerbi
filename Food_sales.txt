@@ -1,0 +1,77 @@
+create database food_db;
+use food_db;
+SELECT * FROM food_db.food_sales;
+DESC food_sales;
+SELECT * FROM food_sales LIMIT 10;
+
+SELECT sum(total_price)  from food_sales;
+SELECT sum(quantity) as Total_pizza_sold  from food_sales;
+SELECT  count(distinct order_id) as total_order from food_sales;
+
+
+
+Select (sum(quantity) / COUNT(DISTINCT order_id)) as Avg_order_Value from food_sales; 
+
+Select dayname(str_to_date(order_date,'%d,%m,%Y')) as day_name,
+round(sum(total_price),2) as tot_price
+from food_sales
+group by dayname(str_to_date(order_date,'%d,%m,%Y'))
+order by tot_price desc;
+
+#day wise sales
+SELECT DAYNAME(STR_TO_DATE(order_date, '%d-%m-%Y')) AS day_name,
+       ROUND(SUM(total_price), 2) AS tot_price
+FROM food_sales
+GROUP BY DAYNAME(STR_TO_DATE(order_date, '%d-%m-%Y'))
+ORDER BY tot_price DESC;
+
+
+SELECT 
+    CASE 
+        WHEN DAYOFWEEK(STR_TO_DATE(order_date, '%d-%m-%Y')) in (1, 7) then 'Weekend'
+        ELSE 'Weekday'
+    END AS day_category,
+    ROUND(SUM(total_price), 2) AS tot_price
+FROM food_sales
+GROUP BY day_category
+ORDER BY tot_price DESC;
+
+
+
+
+
+
+#weekdays and weekend wise sales
+SELECT 
+    CASE dayname(STR_TO_DATE(order_date, '%d-%m-%Y')) 
+	when "saturday" then "weekend"
+    when "sunday" then "weekday"
+    else "weekday"
+    END AS day_category,
+    ROUND(SUM(total_price), 2) AS tot_price
+FROM food_sales
+GROUP BY day_category
+ORDER BY tot_price DESC;
+
+#months wise sales
+SELECT monthname(STR_TO_DATE(order_date, '%d-%m-%Y')) AS day_name,
+       count(quantity) AS tot_quantity
+FROM food_sales
+GROUP BY monthname(STR_TO_DATE(order_date, '%d-%m-%Y'))
+ORDER BY tot_quantity DESC;
+
+
+
+
+SELECT pizza_size,round(SUM(total_price) * 100/ (select sum(total_price) from food_sales),2) as sales_category
+FROM food_sales
+GROUP BY pizza_size
+order by sales_category DESC;
+
+
+# quarter sales
+SELECT quarter(STR_TO_DATE(order_date, '%d-%m-%Y')) AS quarter_no,
+       sum(total_price) AS tot_price
+FROM food_sales
+GROUP BY quarter(STR_TO_DATE(order_date, '%d-%m-%Y'))
+ORDER BY tot_price DESC;
